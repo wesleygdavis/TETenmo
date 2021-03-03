@@ -76,5 +76,15 @@ namespace TenmoClient
             Console.WriteLine();
             Console.WriteLine("Account Balance: " + balance.ToString("C2"));
         }
+
+        public void printUserList(List<User> userList)
+        {
+            Console.WriteLine();
+
+            foreach (User user in userList)
+            {
+                Console.WriteLine($"{user.UserId} {user.Username}");
+            }
+        }
     }
 }

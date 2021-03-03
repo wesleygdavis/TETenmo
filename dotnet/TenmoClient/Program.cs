@@ -9,6 +9,7 @@ namespace TenmoClient
         private static readonly ConsoleService consoleService = new ConsoleService();
         private static readonly AuthService authService = new AuthService();
         private static readonly AccountAPIService accountService = new AccountAPIService();
+        private static readonly TransferAPIServices transferService = new TransferAPIServices();
 
         static void Main(string[] args)
         {
@@ -93,7 +94,7 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 2)
                 {
-
+                    
                 }
                 else if (menuSelection == 3)
                 {
@@ -101,7 +102,7 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 4)
                 {
-
+                    consoleService.printUserList(transferService.GetUsers(token));
                 }
                 else if (menuSelection == 5)
                 {
