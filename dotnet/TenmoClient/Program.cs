@@ -8,6 +8,7 @@ namespace TenmoClient
     {
         private static readonly ConsoleService consoleService = new ConsoleService();
         private static readonly AuthService authService = new AuthService();
+        private static readonly AccountAPIService accountService = new AccountAPIService();
 
         static void Main(string[] args)
         {
@@ -67,6 +68,7 @@ namespace TenmoClient
         private static void MenuSelection()
         {
             int menuSelection = -1;
+            string token = UserService.GetToken();
             while (menuSelection != 0)
             {
                 Console.WriteLine("");
@@ -87,7 +89,7 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 1)
                 {
-
+                    consoleService.printBalance(accountService.GetBalance(token));
                 }
                 else if (menuSelection == 2)
                 {

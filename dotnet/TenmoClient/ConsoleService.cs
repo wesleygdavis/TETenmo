@@ -70,5 +70,11 @@ namespace TenmoClient
             Console.WriteLine("");
             return pass;
         }
+
+        public void printBalance(decimal balance)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Account Balance: " + balance.ToString("C2"));
+        }
     }
 }
