@@ -73,6 +73,34 @@ namespace TenmoServer.DAO
             return returnUsers;
         }
 
+        public List<GetUser> GetUserList()
+        {
+            List<GetUser> returnUsers = new List<GetUser>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT user_id, username FROM users", conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        GetUser u = GetSafeUserFromReader(reader);
+                        returnUsers.Add(u);
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+            return returnUsers;
+        }
+
         public User AddUser(string username, string password)
         {
             IPasswordHasher passwordHasher = new PasswordHasher();
@@ -115,6 +143,18 @@ namespace TenmoServer.DAO
                 Username = Convert.ToString(reader["username"]),
                 PasswordHash = Convert.ToString(reader["password_hash"]),
                 Salt = Convert.ToString(reader["salt"]),
+            };
+
+            return u;
+        }
+
+        private GetUser GetSafeUserFromReader(SqlDataReader reader)
+        {
+            GetUser u = new GetUser()
+            {
+                UserId = Convert.ToInt32(reader["user_id"]),
+                Username = Convert.ToString(reader["username"]),
+               
             };
 
             return u;

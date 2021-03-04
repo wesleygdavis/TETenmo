@@ -26,9 +26,12 @@ namespace TenmoServer.Controllers
         }
 
         [HttpGet("users")]
-        public List<User> ListUsers()
+        public List<GetUser> ListUsers()
         {
-            return userDAO.GetUsers();
+            return userDAO.GetUserList();
         }
+
+       // [HttpPost]
+        
     }
 }

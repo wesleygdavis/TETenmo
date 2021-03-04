@@ -15,14 +15,14 @@ namespace TenmoClient
         {
             Console.WriteLine("");
             Console.Write("Please enter transfer ID to " + action + " (0 to cancel): ");
-            if (!int.TryParse(Console.ReadLine(), out int auctionId))
+            if (!int.TryParse(Console.ReadLine(), out int userId))
             {
                 Console.WriteLine("Invalid input. Only input a number.");
                 return 0;
             }
             else
             {
-                return auctionId;
+                return userId;
             }
         }
 

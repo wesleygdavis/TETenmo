@@ -103,6 +103,8 @@ namespace TenmoClient
                 else if (menuSelection == 4)
                 {
                     consoleService.printUserList(transferService.GetUsers(token));
+                    int transferUserId = consoleService.PromptForTransferID("transfer");
+                    Console.WriteLine(transferUserId);
                 }
                 else if (menuSelection == 5)
                 {
