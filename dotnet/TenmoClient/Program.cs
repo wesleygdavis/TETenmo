@@ -104,7 +104,8 @@ namespace TenmoClient
                 {
                     consoleService.printUserList(transferService.GetUsers(token));
                     int transferUserId = consoleService.PromptForTransferID("transfer");
-                    Console.WriteLine(transferUserId);
+                    decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
+                    
                 }
                 else if (menuSelection == 5)
                 {

@@ -86,5 +86,20 @@ namespace TenmoClient
                 Console.WriteLine($"{user.UserId} {user.Username}");
             }
         }
+
+        public decimal PromptForTransferAmount(string action)
+        {
+            Console.WriteLine("");
+            Console.Write("Please enter transfer amount to " + action + " (0 to cancel): ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
+            {
+                Console.WriteLine("Invalid input. Only input a dollar amount.");
+                return 0;
+            }
+            else
+            {
+                return amount;
+            }
+        }
     }
 }

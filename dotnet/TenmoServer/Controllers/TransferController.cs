@@ -31,7 +31,39 @@ namespace TenmoServer.Controllers
             return userDAO.GetUserList();
         }
 
-       // [HttpPost]
+       [HttpPost]
+       public ActionResult CreateTransfer(CreateTransfer transfer)
+        {
+            decimal accountBalance = accountDAO.GetBalance(transfer.AccountFrom);
+
+            if (transfer.Amount <= accountBalance)
+            {
+                bool reduceSuccess = transferDAO.ReduceBalance(transfer.Amount, transfer.AccountFrom);
+                if (!reduceSuccess)
+                {
+                    return StatusCode(500, "Unable to withdraw funds / server issue.");
+                }
+                bool increaseSuccess = transferDAO.IncreaseBalance(transfer.Amount, transfer.AccountTo);
+                if (!increaseSuccess)
+                {
+                    return StatusCode(500, "Unable to add funds / server issue.");
+                
+                }
+                bool createTransferSuccess = transferDAO.CreateTransfer(transfer);
+                if (!createTransferSuccess)
+                {
+                    return StatusCode(500, "Unable to record transaction / server issue.");
+                }
+                return Ok();
+            }
+            else 
+            {
+                return BadRequest("Insufficient funds.");
+            
+            }
+            
+        }
+       
         
     }
 }

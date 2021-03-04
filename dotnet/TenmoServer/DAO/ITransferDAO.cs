@@ -8,5 +8,10 @@ namespace TenmoServer.DAO
 {
     public interface ITransferDAO
     {
+
+        bool ReduceBalance(decimal amount, int userId);
+        bool IncreaseBalance(decimal amount, int userId);
+        bool CreateTransfer(CreateTransfer createTransfer);
+        
     }
 }
