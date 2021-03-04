@@ -10,6 +10,7 @@ namespace TenmoClient
         private static readonly AuthService authService = new AuthService();
         private static readonly AccountAPIService accountService = new AccountAPIService();
         private static readonly TransferAPIServices transferService = new TransferAPIServices();
+        
 
         static void Main(string[] args)
         {
@@ -72,6 +73,7 @@ namespace TenmoClient
             string token = UserService.GetToken();
             while (menuSelection != 0)
             {
+                Console.Clear();
                 Console.WriteLine("");
                 Console.WriteLine("Welcome to TEnmo! Please make a selection: ");
                 Console.WriteLine("1: View your current balance");
@@ -91,6 +93,7 @@ namespace TenmoClient
                 else if (menuSelection == 1)
                 {
                     consoleService.printBalance(accountService.GetBalance(token));
+                    Console.ReadLine();
                 }
                 else if (menuSelection == 2)
                 {
@@ -102,10 +105,14 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 4)
                 {
+                    Console.Clear();
                     consoleService.printUserList(transferService.GetUsers(token));
                     int transferUserId = consoleService.PromptForTransferID("transfer");
                     decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
-                    
+                    API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
+                    string responseMessage = transferService.Transfer(transfer,token);
+                    consoleService.PromptPrintMessage(responseMessage);
+                    Console.ReadLine();
                 }
                 else if (menuSelection == 5)
                 {
@@ -116,6 +123,7 @@ namespace TenmoClient
                     Console.WriteLine("");
                     UserService.SetLogin(new API_User()); //wipe out previous login info
                     Run(); //return to entry point
+                    
                 }
                 else
                 {

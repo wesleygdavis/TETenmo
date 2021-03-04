@@ -25,5 +25,6 @@ namespace TenmoClient
         {
             return user?.Token ?? string.Empty;
         }
+      
     }
 }

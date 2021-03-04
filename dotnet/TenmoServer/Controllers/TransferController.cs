@@ -34,11 +34,14 @@ namespace TenmoServer.Controllers
        [HttpPost]
        public ActionResult CreateTransfer(CreateTransfer transfer)
         {
-            decimal accountBalance = accountDAO.GetBalance(transfer.AccountFrom);
-
-            if (transfer.Amount <= accountBalance)
+            decimal accountBalance = accountDAO.GetBalance(transfer.UserId);
+            if(transfer.UserId == transfer.AccountTo)
             {
-                bool reduceSuccess = transferDAO.ReduceBalance(transfer.Amount, transfer.AccountFrom);
+                return BadRequest("Invalid recipient.");
+            }
+            else if (transfer.Amount <= accountBalance)
+            {
+                bool reduceSuccess = transferDAO.ReduceBalance(transfer.Amount, transfer.UserId);
                 if (!reduceSuccess)
                 {
                     return StatusCode(500, "Unable to withdraw funds / server issue.");
@@ -54,7 +57,8 @@ namespace TenmoServer.Controllers
                 {
                     return StatusCode(500, "Unable to record transaction / server issue.");
                 }
-                return Ok();
+
+                return Ok("Transfer successful.");
             }
             else 
             {

@@ -101,5 +101,12 @@ namespace TenmoClient
                 return amount;
             }
         }
+
+        public void PromptPrintMessage(string message)
+        {
+            Console.WriteLine("");
+            Console.WriteLine(message);
+
+        }
     }
 }

@@ -78,10 +78,10 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUE (2, 2, @accountFrom, @accountTo, @amount);", conn);
+                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (2, 2, @accountFrom, @accountTo, @amount);", conn);
                     cmd.Parameters.AddWithValue("@amount", transfer.Amount);
-                    cmd.Parameters.AddWithValue("@accountFrom", transfer.AccountFrom);
-                    cmd.Parameters.AddWithValue("@accountTo", transfer.AccountTo);
+                    cmd.Parameters.AddWithValue("@accountFrom", GetAccountNumber(transfer.UserId));
+                    cmd.Parameters.AddWithValue("@accountTo", GetAccountNumber(transfer.AccountTo));
                     cmd.ExecuteNonQuery();
 
                     output = true;
@@ -92,6 +92,34 @@ namespace TenmoServer.DAO
                 throw;
             }
             return output;
+        }
+
+        private int GetAccountNumber(int userId)
+        {
+            int output = 0;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT account_id FROM accounts WHERE user_id = @userId;", conn);
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        output = Convert.ToInt32(reader["account_id"]);
+                    }
+                    
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+            return output;
+
         }
 
     }

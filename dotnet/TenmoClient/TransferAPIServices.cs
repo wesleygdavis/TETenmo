@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace TenmoClient
 {
     class TransferAPIServices
@@ -58,6 +59,26 @@ namespace TenmoClient
                     throw new Exception();
                 }
             }
+        }
+
+        public API_Transfer CreateTransfer( int accountTo, decimal amount, int userId)
+        {
+            API_Transfer transfer = new API_Transfer()
+            { AccountTo = accountTo, Amount = amount, UserId = userId };
+
+            return transfer;
+        }
+
+        public string Transfer(API_Transfer transfer, string token)
+        {
+            RestRequest request = new RestRequest(TRANSFER_URL);
+            request.AddJsonBody(transfer);
+            client.Authenticator = new JwtAuthenticator(token);
+            IRestResponse response = client.Post(request);
+
+            return response.Content;
+
+
         }
     }
 }
