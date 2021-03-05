@@ -75,7 +75,7 @@ namespace TenmoClient
             request.AddJsonBody(transfer);
             client.Authenticator = new JwtAuthenticator(token);
             IRestResponse response = client.Post(request);
-
+            //ProcessErrorResponse(response);
             return response.Content;
 
 

@@ -22,6 +22,7 @@ namespace TenmoClient
             int loginRegister = -1;
             while (loginRegister != 1 && loginRegister != 2)
             {
+                Console.Clear();
                 Console.WriteLine("Welcome to TEnmo!");
                 Console.WriteLine("1: Login");
                 Console.WriteLine("2: Register");
@@ -53,14 +54,16 @@ namespace TenmoClient
                         if (isRegistered)
                         {
                             Console.WriteLine("");
-                            Console.WriteLine("Registration successful. You can now log in.");
+                            Console.WriteLine("Registration successful. You can now log in. Press any key to continue.");
                             loginRegister = -1; //reset outer loop to allow choice for login
+                            Console.ReadLine();
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid selection.");
+                    Console.WriteLine("Invalid selection. Press any key to return to login.");
+                    Console.ReadLine();
                 }
             }
 
@@ -106,8 +109,9 @@ namespace TenmoClient
                 else if (menuSelection == 4)
                 {
                     Console.Clear();
-                    consoleService.printUserList(transferService.GetUsers(token));
-                    int transferUserId = consoleService.PromptForTransferID("transfer");
+                    List<User> userList = transferService.GetUsers(token);
+                    consoleService.printUserList(userList);
+                    int transferUserId = consoleService.PromptForTransferID("transfer", userList);
                     decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
                     API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
                     string responseMessage = transferService.Transfer(transfer,token);

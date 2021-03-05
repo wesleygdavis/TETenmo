@@ -11,19 +11,34 @@ namespace TenmoClient
         /// </summary>
         /// <param name="action">String to print in prompt. Expected values are "Approve" or "Reject" or "View"</param>
         /// <returns>ID of transfers to view, approve, or reject</returns>
-        public int PromptForTransferID(string action)
+        public int PromptForTransferID(string action, List<User> userList)
         {
             Console.WriteLine("");
-            Console.Write("Please enter transfer ID to " + action + " (0 to cancel): ");
-            if (!int.TryParse(Console.ReadLine(), out int userId))
+            Console.Write("Please enter user ID to " + action + " (0 to cancel): ");
+            bool check = true;
+            int output = 0;
+            while (check)
             {
-                Console.WriteLine("Invalid input. Only input a number.");
-                return 0;
+                if (!int.TryParse(Console.ReadLine(), out int userId))
+                {
+                    Console.WriteLine("Invalid input. Only input a number.");
+                    //return 0;
+                }
+                else if (userId == 0)
+                {
+                    return 0;
+                }
+                else if (!ValidUser(userList, userId))
+                {
+                    Console.WriteLine("Please select a valid user ID.");
+                }
+                else
+                {
+                    output = userId;
+                    check = false;
+                }
             }
-            else
-            {
-                return userId;
-            }
+            return output;
         }
 
         public LoginUser PromptForLogin()
@@ -107,6 +122,21 @@ namespace TenmoClient
             Console.WriteLine("");
             Console.WriteLine(message);
 
+        }
+
+        public static bool ValidUser(List<User> userList, int userId)
+        {
+            bool output = false;
+
+            foreach (User user in userList)
+            {
+                if (user.UserId == userId)
+                {
+                    output = true;
+                }
+            }
+
+            return output;
         }
     }
 }
