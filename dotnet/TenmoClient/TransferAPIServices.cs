@@ -22,11 +22,7 @@ namespace TenmoClient
             client.Authenticator = new JwtAuthenticator(token);
             IRestResponse<List<User>> response = client.Get<List<User>>(request);
 
-            if (response.ResponseStatus != ResponseStatus.Completed)
-            {
-                ProcessErrorResponse(response);
-            }
-            else if (!response.IsSuccessful)
+            if (response.ResponseStatus != ResponseStatus.Completed || !response.IsSuccessful)
             {
                 ProcessErrorResponse(response);
             }
@@ -38,8 +34,9 @@ namespace TenmoClient
             return output;
         }
 
-        public void ProcessErrorResponse(IRestResponse response)
+        public string ProcessErrorResponse(IRestResponse response)
         {
+            string message = response.Content;
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 throw new Exception("Error occurred - unable to reach server.");
@@ -54,18 +51,22 @@ namespace TenmoClient
                 {
                     throw new Exception("You do not have the correct permission for the requested action");
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return message;
+                }
                 else
                 {
                     throw new Exception();
                 }
             }
+            return message;
         }
 
-        public API_Transfer CreateTransfer( int accountTo, decimal amount, int userId)
+        public API_Transfer CreateTransfer( int accountTo, decimal amount, int accountFrom)
         {
             API_Transfer transfer = new API_Transfer()
-            { AccountTo = accountTo, Amount = amount, UserId = userId };
-
+            { AccountTo = accountTo, Amount = amount, AccountFrom = accountFrom };
             return transfer;
         }
 
@@ -75,10 +76,27 @@ namespace TenmoClient
             request.AddJsonBody(transfer);
             client.Authenticator = new JwtAuthenticator(token);
             IRestResponse response = client.Post(request);
-            ProcessErrorResponse(response);
-            return response.Content;
+            string message = ProcessErrorResponse(response);
+            return message;
 
 
+        }
+
+        public List<Transfer> GetTransfersForUser(string token)
+        {
+            RestRequest request = new RestRequest(TRANSFER_URL);
+            client.Authenticator = new JwtAuthenticator(token);
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+            return response.Data;
+        }
+
+        public string CreateRequest(API_Transfer transfer, string token)
+        {
+            RestRequest request = new RestRequest(TRANSFER_URL + "/request");
+            client.Authenticator = new JwtAuthenticator(token);
+            IRestResponse response = client.Post(request);
+            string message = ProcessErrorResponse(response);
+            return message;
         }
     }
 }

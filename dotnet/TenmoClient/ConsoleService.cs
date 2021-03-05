@@ -88,27 +88,38 @@ namespace TenmoClient
 
         public void printBalance(decimal balance)
         {
-            Console.WriteLine();
-            Console.WriteLine("Account Balance: " + balance.ToString("C2"));
+            Console.WriteLine("");
+            Console.WriteLine("Your current account balance is: " + balance.ToString("C2"));
+            Console.WriteLine("");
+            Console.WriteLine("Press enter to continue.");
         }
 
         public void printUserList(List<User> userList)
         {
             Console.WriteLine();
-
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Users");
+            Console.WriteLine("ID\tName");
+            Console.WriteLine("----------------------------------");
             foreach (User user in userList)
             {
-                Console.WriteLine($"{user.UserId} {user.Username}");
+                Console.WriteLine($"{user.UserId}\t{user.Username}");
             }
+            Console.WriteLine("---------");
         }
 
         public decimal PromptForTransferAmount(string action)
         {
             Console.WriteLine("");
-            Console.Write("Please enter transfer amount to " + action + " (0 to cancel): ");
+            Console.Write("Please enter amount to " + action + " (0 to cancel): ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal amount))
             {
                 Console.WriteLine("Invalid input. Only input a dollar amount.");
+                return 0;
+            }
+            else if (amount <= 0)
+            {
+                Console.WriteLine("Nice try Joe. Only positive amounts.");
                 return 0;
             }
             else
@@ -121,6 +132,8 @@ namespace TenmoClient
         {
             Console.WriteLine("");
             Console.WriteLine(message);
+            Console.WriteLine("");
+            Console.WriteLine("Press enter to continue.");
 
         }
 
@@ -137,6 +150,89 @@ namespace TenmoClient
             }
 
             return output;
+        }
+
+        public void printTransfersFromList(List<Transfer> transferList)
+        {
+            Console.WriteLine();
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Transfers");
+            Console.WriteLine("ID\tFrom/To\t\tAmount");
+            Console.WriteLine("----------------------------------");
+            foreach (Transfer transfer in transferList)
+            {
+                Console.WriteLine(FilterByFromOrTo(transfer));    
+            }
+            Console.WriteLine("---------");
+        }
+
+        private string FilterByFromOrTo(Transfer transfer)
+        {
+            string output = "";
+            if (transfer.AccountFromUserName == UserService.GetUserName())
+            {
+                output = $"{transfer.TransferId}\tTo:   {transfer.AccountToUserName}\t{transfer.Amount:C2}";
+            }
+            else
+            {
+                output = $"{transfer.TransferId}\tFrom: {transfer.AccountFromUserName}\t{transfer.Amount:C2}";
+            }
+            return output;
+        }
+
+        public int PromptForTransferDetails(List<Transfer> transferList)
+        {
+            Console.WriteLine("");
+            Console.Write("Please enter transfer ID to view details (0 to cancel): ");
+            bool check = true;
+            int output = 0;
+            while (check)
+            {
+                if (!int.TryParse(Console.ReadLine(), out int input))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                }
+                else if (input == 0)
+                {
+                    return output;
+                }
+                else 
+                {
+                    foreach (Transfer transfer in transferList)
+                    {
+                        if (transfer.TransferId == input)
+                        {
+                            output = input;
+                            return output;
+                        }
+                    }
+                    Console.WriteLine("");
+                    Console.WriteLine("Not a valid transfer ID.");
+                    Console.WriteLine("Please enter a valid transfer ID or press 0 to exit.");
+                }
+            }
+            return output;
+        }
+
+        public void PrintTransferDetails(List<Transfer> transferList, int transferId)
+        {
+            foreach (Transfer transfer in transferList)
+            {
+                if (transfer.TransferId == transferId)
+                {
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine("Transfer Details");
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine($"ID:\t{transfer.TransferId}");
+                    Console.WriteLine($"From:\t{transfer.AccountFromUserName}");
+                    Console.WriteLine($"To:\t{transfer.AccountToUserName}");
+                    Console.WriteLine($"Type:\t{transfer.TransferType}");
+                    Console.WriteLine($"Status:\t{transfer.TransferStatus}");
+                    Console.WriteLine($"Amount:\t{transfer.Amount:C2}");
+                    Console.WriteLine("");
+                    Console.WriteLine("Press enter to continue.");
+                }
+            }
         }
     }
 }

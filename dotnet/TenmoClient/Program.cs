@@ -95,12 +95,22 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 1)
                 {
+                    Console.Clear();
                     consoleService.printBalance(accountService.GetBalance(token));
                     Console.ReadLine();
                 }
                 else if (menuSelection == 2)
                 {
-                    
+                    Console.Clear();
+                    List<Transfer> transferList = transferService.GetTransfersForUser(token);
+                    consoleService.printTransfersFromList(transferList);
+                    int transferId = consoleService.PromptForTransferDetails(transferList);
+                    if (transferId != 0)
+                    {
+                        Console.Clear();
+                        consoleService.PrintTransferDetails(transferList, transferId);
+                        Console.ReadLine();
+                    }
                 }
                 else if (menuSelection == 3)
                 {
@@ -115,15 +125,34 @@ namespace TenmoClient
                     if (transferUserId != 0)
                     {
                         decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
-                        API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
-                        string responseMessage = transferService.Transfer(transfer, token);
-                        consoleService.PromptPrintMessage(responseMessage);
-                        Console.ReadLine();
+                        if (transferAmount != 0)
+                        {
+                            API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
+                            string responseMessage = transferService.Transfer(transfer, token);
+                            consoleService.PromptPrintMessage(responseMessage);
+                            Console.ReadLine();
+                        }
                     }
+                    Console.ReadLine();
                 }
                 else if (menuSelection == 5)
                 {
-
+                    Console.Clear();
+                    List<User> userList = transferService.GetUsers(token);
+                    consoleService.printUserList(userList);
+                    int transferUserId = consoleService.PromptForTransferID("request", userList);
+                    if (transferUserId != 0)
+                    {
+                        decimal transferAmount = consoleService.PromptForTransferAmount("request");
+                        if (transferAmount != 0)
+                        {
+                            API_Transfer transfer = transferService.CreateTransfer(UserService.GetUserId(), transferAmount, transferUserId);
+                            string responseMessage = transferService.CreateRequest(transfer, token);
+                            consoleService.PromptPrintMessage(responseMessage);
+                            Console.ReadLine();
+                        }
+                    }
+                    Console.ReadLine();
                 }
                 else if (menuSelection == 6)
                 {

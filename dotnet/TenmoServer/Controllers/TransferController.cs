@@ -28,21 +28,22 @@ namespace TenmoServer.Controllers
         [HttpGet("users")]
         public List<GetUser> ListUsers()
         {
-            return userDAO.GetUserList();
+            string username = User.Identity.Name;
+            return userDAO.GetUserList(username);
         }
 
-       [HttpPost]
-       public ActionResult CreateTransfer(CreateTransfer transfer)
+        [HttpPost]
+        public ActionResult CreateTransfer(CreateTransfer transfer)
         {
-            decimal accountBalance = accountDAO.GetBalance(transfer.UserId);
+            decimal accountBalance = accountDAO.GetBalance(transfer.AccountFrom);
 
-            if(transfer.UserId == transfer.AccountTo)
+            if(transfer.AccountFrom == transfer.AccountTo)
             {
                 return BadRequest("Invalid recipient. Cannot send money to yourself.");
             }
             else if (transfer.Amount <= accountBalance)
             {
-                bool reduceSuccess = transferDAO.ReduceBalance(transfer.Amount, transfer.UserId);
+                bool reduceSuccess = transferDAO.ReduceBalance(transfer.Amount, transfer.AccountFrom);
                 if (!reduceSuccess)
                 {
                     return StatusCode(500, "Unable to withdraw funds / server issue.");
@@ -53,7 +54,7 @@ namespace TenmoServer.Controllers
                     return StatusCode(500, "Unable to add funds / server issue.");
                 
                 }
-                bool createTransferSuccess = transferDAO.CreateTransfer(transfer);
+                bool createTransferSuccess = transferDAO.CreateTransfer(transfer, 2, 2);
                 if (!createTransferSuccess)
                 {
                     return StatusCode(500, "Unable to record transaction / server issue.");
@@ -65,10 +66,34 @@ namespace TenmoServer.Controllers
             {
                 return BadRequest("Insufficient funds.");
             
-            }
-            
+            }   
         }
-       
-        
+
+        [HttpGet]
+        public ActionResult<List<Transfer>> GetTransferList()
+        {
+            User user = userDAO.GetUser(User.Identity.Name);
+            List<Transfer> transferList = transferDAO.GetTransferForUser(user.UserId, 1);
+            return Ok(transferList);
+        }
+
+        [HttpPost("request")]
+        public ActionResult MakeRequest(CreateTransfer transfer)
+        {
+            if (transfer.AccountFrom == transfer.AccountTo)
+            {
+                return BadRequest("Invalid recipient. Cannot request money from yourself.");
+            }
+            else
+            {
+                bool createTransferSuccess = transferDAO.CreateTransfer(transfer, 1, 1);
+                if (!createTransferSuccess)
+                {
+                    return StatusCode(500, "Unable to record request / server issue.");
+                }
+
+                return Ok("Request successful.");
+            }
+        }
     }
 }

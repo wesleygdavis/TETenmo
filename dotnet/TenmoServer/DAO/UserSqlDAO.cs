@@ -101,17 +101,18 @@ namespace TenmoServer.DAO
             return returnUsers;
         }
 
-        public List<GetUser> GetUserList()
+        public List<GetUser> GetUserList(string username)
         {
             List<GetUser> returnUsers = new List<GetUser>();
-
+            string currentUserName = username;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT user_id, username FROM users ORDER BY user_id", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT user_id, username FROM users WHERE username <> @currentUserName", conn);
+                    cmd.Parameters.AddWithValue("@currentUserName", currentUserName);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
