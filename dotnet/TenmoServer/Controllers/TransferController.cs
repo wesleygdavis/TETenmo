@@ -34,19 +34,11 @@ namespace TenmoServer.Controllers
        [HttpPost]
        public ActionResult CreateTransfer(CreateTransfer transfer)
         {
-            /*
-            User existingUser = userDAO.GetUserFromId(transfer.AccountTo);
-
-            if (existingUser == null)
-            {
-                return Conflict("User ID does not exist. Please choose a valid User ID.");
-            }
-            */
             decimal accountBalance = accountDAO.GetBalance(transfer.UserId);
 
             if(transfer.UserId == transfer.AccountTo)
             {
-                return BadRequest("Invalid recipient.");
+                return BadRequest("Invalid recipient. Cannot send money to yourself.");
             }
             else if (transfer.Amount <= accountBalance)
             {

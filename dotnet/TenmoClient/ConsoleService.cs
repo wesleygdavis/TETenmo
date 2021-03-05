@@ -21,7 +21,7 @@ namespace TenmoClient
             {
                 if (!int.TryParse(Console.ReadLine(), out int userId))
                 {
-                    Console.WriteLine("Invalid input. Only input a number.");
+                    Console.WriteLine("Invalid input. Only input a number (0 to cancel).");
                     //return 0;
                 }
                 else if (userId == 0)
@@ -30,7 +30,7 @@ namespace TenmoClient
                 }
                 else if (!ValidUser(userList, userId))
                 {
-                    Console.WriteLine("Please select a valid user ID.");
+                    Console.WriteLine("Please select a valid user ID (0 to cancel).");
                 }
                 else
                 {

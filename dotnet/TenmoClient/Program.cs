@@ -112,11 +112,14 @@ namespace TenmoClient
                     List<User> userList = transferService.GetUsers(token);
                     consoleService.printUserList(userList);
                     int transferUserId = consoleService.PromptForTransferID("transfer", userList);
-                    decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
-                    API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
-                    string responseMessage = transferService.Transfer(transfer,token);
-                    consoleService.PromptPrintMessage(responseMessage);
-                    Console.ReadLine();
+                    if (transferUserId != 0)
+                    {
+                        decimal transferAmount = consoleService.PromptForTransferAmount("transfer");
+                        API_Transfer transfer = transferService.CreateTransfer(transferUserId, transferAmount, UserService.GetUserId());
+                        string responseMessage = transferService.Transfer(transfer, token);
+                        consoleService.PromptPrintMessage(responseMessage);
+                        Console.ReadLine();
+                    }
                 }
                 else if (menuSelection == 5)
                 {
