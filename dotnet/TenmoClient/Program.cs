@@ -118,12 +118,13 @@ namespace TenmoClient
                     List<Transfer> transferList = transferService.GetPendingTransfersForUser(token);
                     consoleService.printPendingRequestsFromList(transferList);
                     int transferId = consoleService.PromptForIdToApproveReject(transferList);
+                    TransferNumber transferNumber = new TransferNumber() { TransferId = transferId };
                     if (transferId != 0)
                     {
                         int userInput = consoleService.PromptToApproveOrReject();
                         if (userInput != 0)
                         {
-                            string message = transferService.ApproveOrReject(userInput, transferId, token);
+                            string message = transferService.ApproveOrReject(userInput, transferNumber, token);
                             consoleService.PromptPrintMessage(message);
                             Console.ReadLine();
                         }

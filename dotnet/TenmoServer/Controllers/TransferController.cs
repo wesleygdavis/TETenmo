@@ -106,9 +106,9 @@ namespace TenmoServer.Controllers
         }
 
         [HttpPut("reject")]
-        public ActionResult RejectRequest(int transferId)
+        public ActionResult RejectRequest(TransferNumber transferNumber)
         {
-            bool rejectSuccess = transferDAO.UpdateRequest(transferId, 3);
+            bool rejectSuccess = transferDAO.UpdateRequest(transferNumber.TransferId, 3);
 
             if (!rejectSuccess)
             {
@@ -121,30 +121,31 @@ namespace TenmoServer.Controllers
         }
 
         [HttpPut("approve")]
-        public ActionResult ApproveRequest(int transferId)
+        public ActionResult ApproveRequest(TransferNumber transferNumber)
         {
             int userId = userDAO.GetUser(User.Identity.Name).UserId;
             Account userAccount = accountDAO.GetAccountFromUserId(userId);
             decimal accountBalance = userAccount.Balance;
-            RawTransferData transfer = transferDAO.GetTransferFromId(transferId);
+            RawTransferData transfer = transferDAO.GetTransferFromId(transferNumber.TransferId);
             decimal transferAmount = transfer.Amount;
+            Account recipientAccount = accountDAO.GetAccountFromAccountNumber(transfer.AccountTo);
             if (transfer.AccountTo == userAccount.AccountId)
             {
                 return BadRequest("You cannot approve a request to your own account.");
             }
             if (accountBalance >= transferAmount)
             {
-                bool reduceSuccess = transferDAO.ReduceBalance(transferAmount, transfer.AccountFrom);
+                bool reduceSuccess = transferDAO.ReduceBalance(transferAmount, userId);
                 if (!reduceSuccess)
                 {
                     return StatusCode(500, "Unable to withdraw funds / server issue.");
                 }
-                bool increaseSuccess = transferDAO.IncreaseBalance(transferAmount, transfer.AccountTo);
+                bool increaseSuccess = transferDAO.IncreaseBalance(transferAmount, recipientAccount.UserId);
                 if (!increaseSuccess)
                 {
                     return StatusCode(500, "Unable to add funds / server issue.");
                 }
-                bool createTransferSuccess = transferDAO.UpdateRequest(transferId, 2);
+                bool createTransferSuccess = transferDAO.UpdateRequest(transferNumber.TransferId, 2);
                 if (!createTransferSuccess)
                 {
                     return StatusCode(500, "Unable to record transaction / server issue.");

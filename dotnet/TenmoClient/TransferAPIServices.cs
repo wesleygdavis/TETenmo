@@ -108,12 +108,12 @@ namespace TenmoClient
             return message;
         }
 
-        public string ApproveOrReject(int userInput, int transferId, string token)
+        public string ApproveOrReject(int userInput, TransferNumber transferNumber, string token)
         {
             if (userInput == 1)
             {
                 RestRequest request = new RestRequest(TRANSFER_URL + "/approve");
-                request.AddJsonBody(transferId);
+                request.AddJsonBody(transferNumber);
                 client.Authenticator = new JwtAuthenticator(token);
                 IRestResponse response = client.Put(request);
                 string message = ProcessErrorResponse(response);
@@ -122,7 +122,7 @@ namespace TenmoClient
             else
             {
                 RestRequest request = new RestRequest(TRANSFER_URL + "/reject");
-                request.AddJsonBody(transferId);
+                request.AddJsonBody(transferNumber);
                 client.Authenticator = new JwtAuthenticator(token);
                 IRestResponse response = client.Put(request);
                 string message = ProcessErrorResponse(response);
