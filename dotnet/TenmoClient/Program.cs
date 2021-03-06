@@ -103,6 +103,7 @@ namespace TenmoClient
                 {
                     Console.Clear();
                     List<Transfer> transferList = transferService.GetTransfersForUser(token);
+
                     consoleService.printTransfersFromList(transferList);
                     int transferId = consoleService.PromptForTransferDetails(transferList);
                     if (transferId != 0)
@@ -118,6 +119,7 @@ namespace TenmoClient
                     List<Transfer> transferList = transferService.GetPendingTransfersForUser(token);
                     consoleService.printPendingRequestsFromList(transferList);
                     int transferId = consoleService.PromptForIdToApproveReject(transferList);
+                    //storing the result from  promptforid
                     TransferNumber transferNumber = new TransferNumber() { TransferId = transferId };
                     if (transferId != 0)
                     {

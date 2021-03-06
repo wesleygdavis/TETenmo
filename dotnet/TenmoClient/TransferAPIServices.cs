@@ -114,6 +114,7 @@ namespace TenmoClient
             {
                 RestRequest request = new RestRequest(TRANSFER_URL + "/approve");
                 request.AddJsonBody(transferNumber);
+                //adding an object the server can read, it connects to all the properties in the sql statement
                 client.Authenticator = new JwtAuthenticator(token);
                 IRestResponse response = client.Put(request);
                 string message = ProcessErrorResponse(response);
