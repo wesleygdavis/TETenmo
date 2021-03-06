@@ -14,5 +14,7 @@ namespace TenmoServer.DAO
         bool IncreaseBalance(decimal amount, int userId);
         bool CreateTransfer(CreateTransfer createTransfer, int transferType, int status);
         List<Transfer> GetTransferForUser(int userId, int type);
+        bool UpdateRequest(int transferId, int status);
+        public RawTransferData GetTransferFromId(int transferId);
     }
 }

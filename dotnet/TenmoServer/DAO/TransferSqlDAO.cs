@@ -127,10 +127,10 @@ namespace TenmoServer.DAO
         public List<Transfer> GetTransferForUser(int userId, int type)
         {
             List<Transfer> transfers = new List<Transfer>();
-            string sqlCondition = "(t.transfer_status_id <> 1)";
+            string sqlCondition = "";
             if (type == 2)
             {
-                sqlCondition = "(t.transfer_status_id = 1)";
+                sqlCondition = "  AND (t.transfer_status_id = 1)";
             }
 
             try
@@ -147,7 +147,7 @@ namespace TenmoServer.DAO
                         + " JOIN users u2 ON a2.user_id = u2.user_id"
                         + " JOIN transfer_statuses ts ON t.transfer_status_id = ts.transfer_status_id"
                         + " JOIN transfer_types tt ON t.transfer_type_id = tt.transfer_type_id"
-                        + $" WHERE (u.user_id = @userId OR u2.user_id = @userId) AND {sqlCondition};";
+                        + $" WHERE (u.user_id = @userId OR u2.user_id = @userId){sqlCondition};";
                     SqlCommand cmd = new SqlCommand(sql, conn);
                     cmd.Parameters.AddWithValue("@userId", userId);
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -181,11 +181,64 @@ namespace TenmoServer.DAO
                 Amount = Convert.ToDecimal(reader["amount"])
 
             };
-
-            
-
             return t;
         }
 
+        public bool UpdateRequest(int transferId, int status)
+        {
+            bool output = false;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("UPDATE transfers SET transfer_status_id = @status WHERE transfer_id = @transferId;", conn);
+                    cmd.Parameters.AddWithValue("@status", status);
+                    cmd.Parameters.AddWithValue("@transferId", transferId);
+                    cmd.ExecuteNonQuery();
+                    output = true;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return output;
+        }
+
+        public RawTransferData GetTransferFromId(int transferId)
+        {
+            RawTransferData output = new RawTransferData();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = @transferId;", conn);
+                    cmd.Parameters.AddWithValue("@transferId", transferId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        output.TransferId = Convert.ToInt32(reader["transfer_id"]);
+                        output.TransferTypeId = Convert.ToInt32(reader["transfer_type_id"]);
+                        output.TransferStatusId = Convert.ToInt32(reader["transfer_status_id"]);
+                        output.AccountFrom = Convert.ToInt32(reader["account_from"]);
+                        output.AccountTo = Convert.ToInt32(reader["account_to"]);
+                        output.Amount = Convert.ToDecimal(reader["amount"]);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return output;
+        }
     }
 }

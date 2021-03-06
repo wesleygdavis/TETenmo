@@ -165,6 +165,19 @@ namespace TenmoClient
             }
             Console.WriteLine("---------");
         }
+        public void printPendingRequestsFromList(List<Transfer> transferList)
+        {
+            Console.WriteLine();
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Pending Transfers");
+            Console.WriteLine("ID\tTo\t\tAmount");
+            Console.WriteLine("----------------------------------");
+            foreach (Transfer transfer in transferList)
+            {
+                Console.WriteLine(FilterByFromOrTo(transfer));
+            }
+            Console.WriteLine("---------");
+        }
 
         private string FilterByFromOrTo(Transfer transfer)
         {
@@ -233,6 +246,78 @@ namespace TenmoClient
                     Console.WriteLine("Press enter to continue.");
                 }
             }
+        }
+
+        public int PromptForIdToApproveReject(List<Transfer> transferList)
+        {
+            Console.WriteLine("");
+            Console.Write("Please enter transfer ID to view approve/reject (0 to cancel): ");
+            bool check = true;
+            int output = 0;
+            while (check)
+            {
+                if (!int.TryParse(Console.ReadLine(), out int input))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                }
+                else if (input == 0)
+                {
+                    return output;
+                }
+                else
+                {
+                    foreach (Transfer transfer in transferList)
+                    {
+                        if (transfer.TransferId == input)
+                        {
+                            output = input;
+                            return output;
+                        }
+                    }
+                    Console.WriteLine("");
+                    Console.WriteLine("Not a valid transfer ID.");
+                    Console.WriteLine("Please enter a valid transfer ID or press 0 to exit.");
+                }
+            }
+            return output;
+        }
+
+        public int PromptToApproveOrReject()
+        {
+            Console.Clear();
+            Console.WriteLine("1: Approve");
+            Console.WriteLine("2: Reject");
+            Console.WriteLine("0: Don't approve or reject");
+            Console.WriteLine("---------");
+            bool check = true;
+            int output = 0;
+            while (check)
+            {
+                if (!int.TryParse(Console.ReadLine(), out int input))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                }
+                else if (input == 0)
+                {
+                    return output;
+                }
+                else if (input > 2)
+                {
+                    Console.WriteLine("Nice try Joe. Please enter a number between 0 and 2.");
+                }
+                else
+                {
+                    output = input;
+                    return output;
+                }
+            }
+            return output;
+        }
+
+        public void PromptToEnter()
+        {
+            Console.WriteLine("Press enter to continue.");
+            Console.ReadLine();
         }
     }
 }

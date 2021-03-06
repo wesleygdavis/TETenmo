@@ -35,7 +35,8 @@ namespace TenmoServer.Controllers
         [HttpPost]
         public ActionResult CreateTransfer(CreateTransfer transfer)
         {
-            decimal accountBalance = accountDAO.GetBalance(transfer.AccountFrom);
+            Account userAccount = accountDAO.GetAccountFromUserId(transfer.AccountFrom);
+            decimal accountBalance = userAccount.Balance;
 
             if(transfer.AccountFrom == transfer.AccountTo)
             {
@@ -92,7 +93,68 @@ namespace TenmoServer.Controllers
                     return StatusCode(500, "Unable to record request / server issue.");
                 }
 
-                return Ok("Request successful.");
+                return Ok("Request is pending.");
+            }
+        }
+
+        [HttpGet("pending")]
+        public ActionResult<List<Transfer>> GetPendingTransferList()
+        {
+            User user = userDAO.GetUser(User.Identity.Name);
+            List<Transfer> transferList = transferDAO.GetTransferForUser(user.UserId, 2);
+            return Ok(transferList);
+        }
+
+        [HttpPut("reject")]
+        public ActionResult RejectRequest(int transferId)
+        {
+            bool rejectSuccess = transferDAO.UpdateRequest(transferId, 3);
+
+            if (!rejectSuccess)
+            {
+                return StatusCode(500, "Unable to reject request / server issue.");
+            }
+            else
+            {
+                return Ok("Request rejected.");
+            }
+        }
+
+        [HttpPut("approve")]
+        public ActionResult ApproveRequest(int transferId)
+        {
+            int userId = userDAO.GetUser(User.Identity.Name).UserId;
+            Account userAccount = accountDAO.GetAccountFromUserId(userId);
+            decimal accountBalance = userAccount.Balance;
+            RawTransferData transfer = transferDAO.GetTransferFromId(transferId);
+            decimal transferAmount = transfer.Amount;
+            if (transfer.AccountTo == userAccount.AccountId)
+            {
+                return BadRequest("You cannot approve a request to your own account.");
+            }
+            if (accountBalance >= transferAmount)
+            {
+                bool reduceSuccess = transferDAO.ReduceBalance(transferAmount, transfer.AccountFrom);
+                if (!reduceSuccess)
+                {
+                    return StatusCode(500, "Unable to withdraw funds / server issue.");
+                }
+                bool increaseSuccess = transferDAO.IncreaseBalance(transferAmount, transfer.AccountTo);
+                if (!increaseSuccess)
+                {
+                    return StatusCode(500, "Unable to add funds / server issue.");
+                }
+                bool createTransferSuccess = transferDAO.UpdateRequest(transferId, 2);
+                if (!createTransferSuccess)
+                {
+                    return StatusCode(500, "Unable to record transaction / server issue.");
+                }
+
+                return Ok("Request Approved, transfer successful.");
+            }
+            else
+            {
+                return BadRequest("Insufficient funds.");
             }
         }
     }

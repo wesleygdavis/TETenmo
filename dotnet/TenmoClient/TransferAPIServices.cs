@@ -90,13 +90,44 @@ namespace TenmoClient
             return response.Data;
         }
 
+        public List<Transfer> GetPendingTransfersForUser(string token)
+        {
+            RestRequest request = new RestRequest(TRANSFER_URL + "/pending");
+            client.Authenticator = new JwtAuthenticator(token);
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+            return response.Data;
+        }
+
         public string CreateRequest(API_Transfer transfer, string token)
         {
             RestRequest request = new RestRequest(TRANSFER_URL + "/request");
+            request.AddJsonBody(transfer);
             client.Authenticator = new JwtAuthenticator(token);
             IRestResponse response = client.Post(request);
             string message = ProcessErrorResponse(response);
             return message;
+        }
+
+        public string ApproveOrReject(int userInput, int transferId, string token)
+        {
+            if (userInput == 1)
+            {
+                RestRequest request = new RestRequest(TRANSFER_URL + "/approve");
+                request.AddJsonBody(transferId);
+                client.Authenticator = new JwtAuthenticator(token);
+                IRestResponse response = client.Put(request);
+                string message = ProcessErrorResponse(response);
+                return message;
+            }
+            else
+            {
+                RestRequest request = new RestRequest(TRANSFER_URL + "/reject");
+                request.AddJsonBody(transferId);
+                client.Authenticator = new JwtAuthenticator(token);
+                IRestResponse response = client.Put(request);
+                string message = ProcessErrorResponse(response);
+                return message;
+            }
         }
     }
 }

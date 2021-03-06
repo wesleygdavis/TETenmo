@@ -28,7 +28,7 @@ namespace TenmoServer.Controllers
         public decimal GetBalance()
         {
             User user = userDAO.GetUser(User.Identity.Name);
-            return accountDAO.GetBalance(user.UserId);
+            return accountDAO.GetAccountFromUserId(user.UserId).Balance;
         }
     }
 }

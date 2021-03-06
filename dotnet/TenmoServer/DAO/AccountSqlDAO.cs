@@ -16,7 +16,7 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        public decimal GetBalance(int userId)
+        public Account GetAccountFromUserId(int userId)
         {
             Account newAccount = null;
 
@@ -41,7 +41,7 @@ namespace TenmoServer.DAO
                 throw;
             }
 
-            return newAccount.Balance;
+            return newAccount;
         }
 
         private Account GetAccountFromReader(SqlDataReader reader)

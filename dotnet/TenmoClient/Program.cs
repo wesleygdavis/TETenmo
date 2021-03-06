@@ -114,6 +114,20 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 3)
                 {
+                    Console.Clear();
+                    List<Transfer> transferList = transferService.GetPendingTransfersForUser(token);
+                    consoleService.printPendingRequestsFromList(transferList);
+                    int transferId = consoleService.PromptForIdToApproveReject(transferList);
+                    if (transferId != 0)
+                    {
+                        int userInput = consoleService.PromptToApproveOrReject();
+                        if (userInput != 0)
+                        {
+                            string message = transferService.ApproveOrReject(userInput, transferId, token);
+                            consoleService.PromptPrintMessage(message);
+                            Console.ReadLine();
+                        }
+                    }
 
                 }
                 else if (menuSelection == 4)
@@ -149,7 +163,6 @@ namespace TenmoClient
                             API_Transfer transfer = transferService.CreateTransfer(UserService.GetUserId(), transferAmount, transferUserId);
                             string responseMessage = transferService.CreateRequest(transfer, token);
                             consoleService.PromptPrintMessage(responseMessage);
-                            Console.ReadLine();
                         }
                     }
                     Console.ReadLine();
