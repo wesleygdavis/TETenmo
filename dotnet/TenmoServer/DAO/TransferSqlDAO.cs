@@ -16,6 +16,7 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
+        //reduces account balance for certain user based on given user id and amount
         public bool ReduceBalance(decimal amount, int userId)
         {
             
@@ -43,6 +44,7 @@ namespace TenmoServer.DAO
         
         }
 
+        //increases account balance for given user ID and amount
         public bool IncreaseBalance(decimal amount, int userId)
         {
             bool output = false;
@@ -69,6 +71,7 @@ namespace TenmoServer.DAO
 
         }
 
+        //creates specific type of transfer from given transfer info, type and status
         public bool CreateTransfer(CreateTransfer transfer, int transferType, int status)
         {
             bool output = false;
