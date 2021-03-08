@@ -99,6 +99,7 @@ namespace TenmoServer.DAO
             return output;
         }
 
+        //get account number based on someone's ID
         private int GetAccountNumber(int userId)
         {
             int output = 0;

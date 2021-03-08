@@ -96,19 +96,24 @@ namespace TenmoClient
                 else if (menuSelection == 1)
                 {
                     Console.Clear();
+                    //prints the results of the get balance function 
                     consoleService.printBalance(accountService.GetBalance(token));
                     Console.ReadLine();
                 }
                 else if (menuSelection == 2)
                 {
                     Console.Clear();
+                    //generates list of transfers for logged in user
                     List<Transfer> transferList = transferService.GetTransfersForUser(token);
-
+                    //prints transfer list to console
                     consoleService.printTransfersFromList(transferList);
+                    //prints to console, asks user for transfer to view details, deals w/ bad input
                     int transferId = consoleService.PromptForTransferDetails(transferList);
+                    //if they choose zero, bounces out to main menu
                     if (transferId != 0)
                     {
                         Console.Clear();
+                        //once they enter valid transfer number, prints details for transfer from the transfer list
                         consoleService.PrintTransferDetails(transferList, transferId);
                         Console.ReadLine();
                     }
@@ -116,10 +121,13 @@ namespace TenmoClient
                 else if (menuSelection == 3)
                 {
                     Console.Clear();
+                    //generates list of pending transfers for users
                     List<Transfer> transferList = transferService.GetPendingTransfersForUser(token);
+                    //prints list of pending transfers
                     consoleService.printPendingRequestsFromList(transferList);
+                    //prompts user for ID of request to approve/reject, deals with bad input
                     int transferId = consoleService.PromptForIdToApproveReject(transferList);
-                    //storing the result from  promptforid
+                    //storing the result from  promptforid in object to serialize for back end
                     TransferNumber transferNumber = new TransferNumber() { TransferId = transferId };
                     if (transferId != 0)
                     {
